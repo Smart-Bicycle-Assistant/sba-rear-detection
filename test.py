@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 plt.style.use('dark_background')
 
 #Read Input Image
-img_ori = cv2.imread('car_num2.png')
+img_ori = cv2.imread('filename')
 
 height, width, channel = img_ori.shape
 plt.figure(figsize=(12, 10))
