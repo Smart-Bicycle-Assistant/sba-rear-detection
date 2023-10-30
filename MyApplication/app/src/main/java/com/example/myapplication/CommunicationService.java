@@ -31,6 +31,8 @@ public class CommunicationService extends Service {
         IntentFilter intentFilter = new IntentFilter("communication_service_filter");
 
         registerReceiver(broadcastReceiver,intentFilter);
+        SendThread sendThread = new SendThread();
+        sendThread.start();
     }
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override

@@ -1,5 +1,6 @@
 package com.example.myapplication;
 import android.Manifest;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
@@ -64,6 +65,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+
+        startService(new Intent(this, CommunicationService.class));
+
         broadcaster = LocalBroadcastManager.getInstance(this);
         yuvToRgbConverter = new YuvToRgbConverter(this);
         interpreter = new Interpreter(loadModel());
