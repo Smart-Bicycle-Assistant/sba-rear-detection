@@ -1,5 +1,6 @@
 package com.example.myapplication;
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.media.Image;
@@ -10,6 +11,8 @@ import androidx.annotation.OptIn;
 import androidx.camera.core.ExperimentalGetImage;
 import androidx.camera.core.ImageAnalysis;
 import androidx.camera.core.ImageProxy;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import org.tensorflow.lite.DataType;
 import org.tensorflow.lite.Interpreter;
 import org.tensorflow.lite.InterpreterApi;
@@ -49,20 +52,22 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
     private final List<String> labels;
     private final Size resultViewSize;
     private final ObjectDetectorCallback listener;
+    private LocalBroadcastManager broadcaster;
 
         public ObjectDetector(
                 YuvToRgbConverter yuvToRgbConverter,
                 Interpreter interpreter,
                 List<String> labels,
                 Size resultViewSize,
-                ObjectDetectorCallback listener
+                ObjectDetectorCallback listener,
+                LocalBroadcastManager broadcaster
         ) {
             this.yuvToRgbConverter = yuvToRgbConverter;
             this.interpreter = interpreter;
             this.labels = labels;
             this.resultViewSize = resultViewSize;
             this.listener = listener;
-
+            this.broadcaster = broadcaster;
             tfImageProcessor = new ImageProcessor.Builder()
                     .add(new ResizeOp(IMG_SIZE_X, IMG_SIZE_Y, ResizeOp.ResizeMethod.BILINEAR))
                     .add(new Rot90Op(-imageRotationDegrees / 90))
@@ -115,8 +120,8 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 //            for (int i = 0; i < outputDetectionNum[0]; i++) {
                 float score = outputScores[0][i];
                 String label = labels.get((int) outputLabels[0][i]);
-                Log.d("TAG", label + " : " + score + " / " + outputBoundingBoxes[0][i][0]);
-                Log.d("TAG", "detect: " + resultViewSize.getHeight());
+//                Log.d("TAG", label + " : " + score + " / " + outputBoundingBoxes[0][i][0]);
+//                Log.d("TAG", "detect: " + resultViewSize.getHeight());
                 RectF boundingBox = new RectF(
                         outputBoundingBoxes[0][i][1] * resultViewSize.getWidth(),
                         outputBoundingBoxes[0][i][0] * resultViewSize.getHeight(),
@@ -132,6 +137,11 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
                 }
             }
 
+            //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
+            DetectionInfo detectionInfo = new DetectionInfo(10d, 10d, 3);
+            Intent intent = new Intent("communication_service_filter");
+            intent.putExtra("msg",detectionInfo.toByteArray());
+            broadcaster.sendBroadcast(intent);
             return detectedObjectList.subList(0, Math.min(detectedObjectList.size(), 4));
         }
     }

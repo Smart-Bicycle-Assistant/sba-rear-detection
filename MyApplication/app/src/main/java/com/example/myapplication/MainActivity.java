@@ -20,6 +20,7 @@ import androidx.camera.lifecycle.ProcessCameraProvider;
 import androidx.camera.view.PreviewView;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 import com.google.common.util.concurrent.ListenableFuture;
 
@@ -55,6 +56,7 @@ public class MainActivity extends AppCompatActivity {
     private YuvToRgbConverter yuvToRgbConverter;
     private static final int REQUEST_CODE_PERMISSIONS = 10;
     private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    LocalBroadcastManager broadcaster;
 
 
 
@@ -62,6 +64,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        broadcaster = LocalBroadcastManager.getInstance(this);
         yuvToRgbConverter = new YuvToRgbConverter(this);
         interpreter = new Interpreter(loadModel());
         labels = loadLabels();
@@ -153,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
 //                     new Size(overlaySurfaceView.getMeasuredWidth(), overlaySurfaceView.getMeasuredHeight()),
                     new Size(displayMetrics.widthPixels, displayMetrics.heightPixels),
                     detectedObjectList -> overlaySurfaceView.draw(detectedObjectList)
-                    ));
+                    , broadcaster));
             try {
                 cameraProvider.unbindAll();
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);
