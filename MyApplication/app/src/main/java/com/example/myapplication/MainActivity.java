@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-        startService(new Intent(this, CommunicationService.class));
+//        startService(new Intent(this, CommunicationService.class));
 
         broadcaster = LocalBroadcastManager.getInstance(this);
         yuvToRgbConverter = new YuvToRgbConverter(this);

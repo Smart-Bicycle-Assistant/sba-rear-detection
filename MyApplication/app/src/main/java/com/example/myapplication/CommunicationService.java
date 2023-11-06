@@ -30,7 +30,7 @@ public class CommunicationService extends Service {
     public CommunicationService() {
         IntentFilter intentFilter = new IntentFilter("communication_service_filter");
 
-        registerReceiver(broadcastReceiver,intentFilter);
+//        registerReceiver(broadcastReceiver,intentFilter);
         SendThread sendThread = new SendThread();
         sendThread.start();
     }

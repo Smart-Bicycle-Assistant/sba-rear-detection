@@ -139,9 +139,9 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 
             //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
             DetectionInfo detectionInfo = new DetectionInfo(10d, 10d, 3);
-            Intent intent = new Intent("communication_service_filter");
-            intent.putExtra("msg",detectionInfo.toByteArray());
-            broadcaster.sendBroadcast(intent);
+//            Intent intent = new Intent("communication_service_filter");
+//            intent.putExtra("msg",detectionInfo.toByteArray());
+//            broadcaster.sendBroadcast(intent);
             return detectedObjectList.subList(0, Math.min(detectedObjectList.size(), 4));
         }
     }
