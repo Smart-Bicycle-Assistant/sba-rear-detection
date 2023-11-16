@@ -42,9 +42,10 @@ public class DetectionInfo {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         try {
+
+            dataOutputStream.writeFloat(boxMaxWidth.floatValue());
+            dataOutputStream.writeFloat(boxMaxHeight.floatValue());
             dataOutputStream.writeInt(boxNumber);
-            dataOutputStream.writeDouble(boxMaxWidth);
-            dataOutputStream.writeDouble(boxMaxHeight);
             dataOutputStream.flush();
         } catch (Exception e) {
             e.printStackTrace();

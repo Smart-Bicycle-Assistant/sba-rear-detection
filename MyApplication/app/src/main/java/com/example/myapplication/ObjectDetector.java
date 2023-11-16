@@ -140,7 +140,7 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
             }
 
             //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
-            DetectionInfo detectionInfo = new DetectionInfo(10d, 10d, 3);
+            DetectionInfo detectionInfo = new DetectionInfo(10.5d, 10.2d, 3);
             if(count == 10) {
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("msg", detectionInfo.toByteArray());

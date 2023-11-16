@@ -94,8 +94,9 @@ public class CommunicationService extends Service {
                 // TODO Auto-generated catch block
                 Log.e("Wifi Class", "Error getting Hotspot IP address ", e);
             }
-            Log.d("TAG", "run: "+myAddr);
-
+            String newIp = ip.substring(0,ip.lastIndexOf(".")).concat(".1");
+            Log.d("TAG", "run: target "+myAddr);
+            Log.d("TAG", "run: my "+ip);
             try {
                 socket = new Socket(myAddr,50000);
 
