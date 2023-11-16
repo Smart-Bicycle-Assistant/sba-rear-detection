@@ -1,10 +1,15 @@
 package com.example.myapplication;
 import android.Manifest;
+import android.app.Service;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.pm.PackageManager;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.PixelFormat;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Size;
@@ -56,9 +61,10 @@ public class MainActivity extends AppCompatActivity {
 
     private YuvToRgbConverter yuvToRgbConverter;
     private static final int REQUEST_CODE_PERMISSIONS = 10;
-    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.INTERNET};
-    LocalBroadcastManager broadcaster;
-
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA,Manifest.permission.ACCESS_WIFI_STATE,Manifest.permission.INTERNET};
+//    LocalBroadcastManager broadcaster;
+    public IMyAidlInterface mRemoteService = null;
+    public ServiceConnection mServiceConnection;
 
 
     @Override
@@ -67,9 +73,26 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
+        mServiceConnection = new ServiceConnection() {
+            @Override
+            public void onServiceConnected(ComponentName name, IBinder service) {
+                mRemoteService = IMyAidlInterface.Stub.asInterface(service);
+                setupCamera();
+                Log.d("myapplication", "FLUIDManagerService connected = " + mRemoteService);
+            }
+
+            @Override
+            public void onServiceDisconnected(ComponentName name) {
+                Log.d("myapplication", "FLUIDManagerService disconnected = " + mRemoteService);
+                mRemoteService = null;
+
+            }
+        };
 
 
-        broadcaster = LocalBroadcastManager.getInstance(this);
+
+
+//        broadcaster = LocalBroadcastManager.getInstance(this);
         yuvToRgbConverter = new YuvToRgbConverter(this);
         interpreter = new Interpreter(loadModel());
         labels = loadLabels();
@@ -84,6 +107,11 @@ public class MainActivity extends AppCompatActivity {
             Log.d("start","startPermissions");
             setupCamera();
             startService(new Intent(this, CommunicationService.class));
+            Intent intent = new Intent();
+            intent.setPackage("com.example.myapplication");
+            intent.setClassName("com.example.myapplication","com.example.myapplication.CommunicationService");
+            Boolean isConnected =  bindService(intent,(ServiceConnection) mServiceConnection, Context.BIND_AUTO_CREATE);
+            Log.d("myapplication", "onCreate bind: "+ isConnected);
         } else {
             Log.d("start","deniedPermissions");
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
@@ -121,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 Log.d("start","onRequestPermissions");
-                setupCamera();
+//                setupCamera();
             } else {
                 Toast.makeText(this, "사용자가 권한을 승인하지 않았습니다.", Toast.LENGTH_SHORT).show();
                 finish();
@@ -147,7 +175,7 @@ public class MainActivity extends AppCompatActivity {
             } catch (InterruptedException e) {
                 throw new RuntimeException(e);
             }
-            Log.d("TAG", "setupCamera: " + cameraProvider);
+//            Log.d("TAG", "setupCamera: " + cameraProvider);
             Preview preview = new Preview.Builder().build();
 
             preview.setSurfaceProvider(viewFinder.getSurfaceProvider());
@@ -159,10 +187,11 @@ public class MainActivity extends AppCompatActivity {
                     .setTargetRotation(findViewById(R.id.cameraView).getDisplay().getRotation())
                     .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                     .build();
-            Log.d("TAG", "setupCamera: label size : " + labels.size());
+//            Log.d("TAG", "setupCamera: label size : " + labels.size());
 //            Log.d("TAG", "setupCamera: ");
             DisplayMetrics displayMetrics = new DisplayMetrics();
             getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
 
             imageAnalysis.setAnalyzer(cameraExecutor, new ObjectDetector(
                     yuvToRgbConverter,
@@ -171,7 +200,7 @@ public class MainActivity extends AppCompatActivity {
 //                     new Size(overlaySurfaceView.getMeasuredWidth(), overlaySurfaceView.getMeasuredHeight()),
                     new Size(displayMetrics.widthPixels, displayMetrics.heightPixels),
                     detectedObjectList -> overlaySurfaceView.draw(detectedObjectList)
-                    , broadcaster));
+                    , this.mRemoteService));
             try {
                 cameraProvider.unbindAll();
                 cameraProvider.bindToLifecycle(this, cameraSelector, preview, imageAnalysis);

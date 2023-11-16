@@ -7,10 +7,12 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.DhcpInfo;
 import android.net.wifi.WifiManager;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.RemoteException;
 import android.util.Log;
 
 import androidx.annotation.NonNull;
@@ -27,33 +29,46 @@ import java.util.List;
 
 public class CommunicationService extends Service {
     private Handler socketHandler;
+    private final IBinder mBinder = new IMyAidlInterface.Stub() {
+        @Override
+        public void sendInfo(Bundle bundle) throws RemoteException {
+            byte[] bytearray = bundle.getByteArray("msg");
+            Message message = Message.obtain();
+            message.obj = bytearray;
+            socketHandler.dispatchMessage(message);
+        }
+    };
     public CommunicationService() {
 
     }
 
     @Override
-    public void onCreate() {
-        super.onCreate();
-        IntentFilter intentFilter = new IntentFilter("communication_service_filter");
+    public void onDestroy() {
 
-        this.registerReceiver(broadcastReceiver,intentFilter);
+    }
+
+    @Override
+    public void onCreate() {
+        Log.d("myapplication", "onCreate: ");
+
+
         SendThread sendThread = new SendThread();
         sendThread.start();
     }
 
-    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            Log.d("myapplication", "onReceive: ");
-            Message message = Message.obtain();
-            message.obj = intent.getByteArrayExtra("msg");
-            socketHandler.dispatchMessage(message);
-        }
-    };
+//    private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            Log.d("myapplication", "onReceive: ");
+//            Message message = Message.obtain();
+//            message.obj = intent.getByteArrayExtra("msg");
+//            socketHandler.dispatchMessage(message);
+//        }
+//    };
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
-        throw new UnsupportedOperationException("Not yet implemented");
+        return mBinder;
     }
 
     class SendThread extends Thread {
@@ -66,23 +81,26 @@ public class CommunicationService extends Service {
             String ip = Utils.getIPAddress(true);
 
 
-//            final WifiManager manager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-//            final DhcpInfo dhcp = manager.getDhcpInfo();
-//            int ipAddress = dhcp.gateway;
-//            InetAddress myAddr = null;
-//            ipAddress = (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) ?
-//                    Integer.reverseBytes(ipAddress) : ipAddress;
-//            byte[] ipAddressByte = BigInteger.valueOf(ipAddress).toByteArray();
-//            try {
-//                myAddr = InetAddress.getByAddress(ipAddressByte);
-//            } catch (UnknownHostException e) {
-//                // TODO Auto-generated catch block
-//                Log.e("Wifi Class", "Error getting Hotspot IP address ", e);
-//            }
+            final WifiManager manager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+            final DhcpInfo dhcp = manager.getDhcpInfo();
+            int ipAddress = dhcp.gateway;
+            InetAddress myAddr = null;
+            ipAddress = (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) ?
+                    Integer.reverseBytes(ipAddress) : ipAddress;
+            byte[] ipAddressByte = BigInteger.valueOf(ipAddress).toByteArray();
+            try {
+                myAddr = InetAddress.getByAddress(ipAddressByte);
+            } catch (UnknownHostException e) {
+                // TODO Auto-generated catch block
+                Log.e("Wifi Class", "Error getting Hotspot IP address ", e);
+            }
+            Log.d("TAG", "run: "+myAddr);
 
             try {
-//                socket = new Socket(myAddr,50000);
-                socket = new Socket("210.107.198.230",21234);
+                socket = new Socket(myAddr,50000);
+
+//                socket = new Socket("210.107.198.230",21234);
+                Log.d("myapplication", "run: "+socket);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -134,5 +152,6 @@ class Utils {
         } catch (Exception ignored) { } // for now eat exceptions
         return "";
     }
+
 
 }

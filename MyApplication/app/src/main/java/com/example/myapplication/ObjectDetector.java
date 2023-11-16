@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.RectF;
 import android.media.Image;
+import android.os.Bundle;
 import android.util.Log;
 import android.util.Size;
 
@@ -37,7 +38,7 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
     private static final float NORMALIZE_MEAN = 0f;
     private static final float NORMALIZE_STD = 1f;
 
-
+    private int count = 0;
 
 
         private int imageRotationDegrees = 0;
@@ -52,7 +53,7 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
     private final List<String> labels;
     private final Size resultViewSize;
     private final ObjectDetectorCallback listener;
-    private LocalBroadcastManager broadcaster;
+    private IMyAidlInterface mRemoteService;
 
         public ObjectDetector(
                 YuvToRgbConverter yuvToRgbConverter,
@@ -60,14 +61,15 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
                 List<String> labels,
                 Size resultViewSize,
                 ObjectDetectorCallback listener,
-                LocalBroadcastManager broadcaster
+                IMyAidlInterface mRemoteService
         ) {
             this.yuvToRgbConverter = yuvToRgbConverter;
             this.interpreter = interpreter;
             this.labels = labels;
             this.resultViewSize = resultViewSize;
             this.listener = listener;
-            this.broadcaster = broadcaster;
+            this.mRemoteService = mRemoteService;
+            Log.d("myapplication", "ObjectDetector: "+ mRemoteService);
             tfImageProcessor = new ImageProcessor.Builder()
                     .add(new ResizeOp(IMG_SIZE_X, IMG_SIZE_Y, ResizeOp.ResizeMethod.BILINEAR))
                     .add(new Rot90Op(-imageRotationDegrees / 90))
@@ -139,10 +141,22 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 
             //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
             DetectionInfo detectionInfo = new DetectionInfo(10d, 10d, 3);
-            Intent intent = new Intent("communication_service_filter");
-            intent.putExtra("msg",detectionInfo.toByteArray());
-            broadcaster.sendBroadcast(intent);
-            Log.d("myapplication", "detect: sent broadcast");
+            if(count == 10) {
+                Bundle bundle = new Bundle();
+                bundle.putByteArray("msg", detectionInfo.toByteArray());
+                try{
+                    mRemoteService.sendInfo(bundle);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                count = 0;
+//                Log.d("myapplication", "detect: ");
+            }
+            else {
+                count ++;
+            }
+
+//            Log.d("myapplication", "detect: sent broadcast");
             return detectedObjectList.subList(0, Math.min(detectedObjectList.size(), 4));
         }
     }

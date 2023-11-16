@@ -60,7 +60,7 @@ public class OverlaySurfaceView extends SurfaceView implements SurfaceHolder.Cal
 
         canvas = surfaceHolder.lockCanvas();
         if (canvas == null) return;
-        Log.d("TAG", "draw: " + detectedObjectList.size());
+//        Log.d("TAG", "draw: " + detectedObjectList.size());
 
         // 이전에 그린 것을 지웁니다.
         canvas.drawColor(0, PorterDuff.Mode.CLEAR);
