@@ -28,16 +28,23 @@ import java.util.List;
 public class CommunicationService extends Service {
     private Handler socketHandler;
     public CommunicationService() {
+
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
         IntentFilter intentFilter = new IntentFilter("communication_service_filter");
 
-//        registerReceiver(broadcastReceiver,intentFilter);
+        this.registerReceiver(broadcastReceiver,intentFilter);
         SendThread sendThread = new SendThread();
         sendThread.start();
     }
+
     private BroadcastReceiver broadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-
+            Log.d("myapplication", "onReceive: ");
             Message message = Message.obtain();
             message.obj = intent.getByteArrayExtra("msg");
             socketHandler.dispatchMessage(message);
@@ -59,22 +66,23 @@ public class CommunicationService extends Service {
             String ip = Utils.getIPAddress(true);
 
 
-            final WifiManager manager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
-            final DhcpInfo dhcp = manager.getDhcpInfo();
-            int ipAddress = dhcp.gateway;
-            InetAddress myAddr = null;
-            ipAddress = (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) ?
-                    Integer.reverseBytes(ipAddress) : ipAddress;
-            byte[] ipAddressByte = BigInteger.valueOf(ipAddress).toByteArray();
-            try {
-                myAddr = InetAddress.getByAddress(ipAddressByte);
-            } catch (UnknownHostException e) {
-                // TODO Auto-generated catch block
-                Log.e("Wifi Class", "Error getting Hotspot IP address ", e);
-            }
+//            final WifiManager manager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
+//            final DhcpInfo dhcp = manager.getDhcpInfo();
+//            int ipAddress = dhcp.gateway;
+//            InetAddress myAddr = null;
+//            ipAddress = (ByteOrder.nativeOrder().equals(ByteOrder.LITTLE_ENDIAN)) ?
+//                    Integer.reverseBytes(ipAddress) : ipAddress;
+//            byte[] ipAddressByte = BigInteger.valueOf(ipAddress).toByteArray();
+//            try {
+//                myAddr = InetAddress.getByAddress(ipAddressByte);
+//            } catch (UnknownHostException e) {
+//                // TODO Auto-generated catch block
+//                Log.e("Wifi Class", "Error getting Hotspot IP address ", e);
+//            }
 
             try {
-                socket = new Socket(myAddr,50000);
+//                socket = new Socket(myAddr,50000);
+                socket = new Socket("210.107.198.230",21234);
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -82,6 +90,7 @@ public class CommunicationService extends Service {
             socketHandler = new Handler(Looper.myLooper()) {
                 @Override
                 public void handleMessage(@NonNull Message msg) {
+                    Log.d("myapplication", "handleMessage: ");
                     byte[] info = (byte[]) msg.obj;
                     try {
                         socket.getOutputStream().write(info);

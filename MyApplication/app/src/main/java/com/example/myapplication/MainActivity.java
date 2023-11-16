@@ -56,7 +56,7 @@ public class MainActivity extends AppCompatActivity {
 
     private YuvToRgbConverter yuvToRgbConverter;
     private static final int REQUEST_CODE_PERMISSIONS = 10;
-    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA};
+    private static final String[] REQUIRED_PERMISSIONS = {Manifest.permission.CAMERA,Manifest.permission.ACCESS_NETWORK_STATE,Manifest.permission.INTERNET};
     LocalBroadcastManager broadcaster;
 
 
@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-//        startService(new Intent(this, CommunicationService.class));
+
 
         broadcaster = LocalBroadcastManager.getInstance(this);
         yuvToRgbConverter = new YuvToRgbConverter(this);
@@ -83,10 +83,20 @@ public class MainActivity extends AppCompatActivity {
         if (allPermissionsGranted()) {
             Log.d("start","startPermissions");
             setupCamera();
+            startService(new Intent(this, CommunicationService.class));
         } else {
             Log.d("start","deniedPermissions");
             ActivityCompat.requestPermissions(this, REQUIRED_PERMISSIONS, REQUEST_CODE_PERMISSIONS);
         }
+
+//        int permissionCheck = ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_NETWORK_STATE);
+//
+//        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+//            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_PHONE_STATE}, );
+//        } else {
+//            //TODO
+//        }
+
 
     }
 
