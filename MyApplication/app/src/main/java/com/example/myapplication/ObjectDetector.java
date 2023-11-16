@@ -117,7 +117,8 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 //            {
 //                Log.d("TAG", ""+outputLabels[0][i]);
 //            }
-
+            double maxWidth = 0;
+            double maxHeight = 0;
             for(int i = 0; i < outputScores[0].length; i++) {
 //            for (int i = 0; i < outputDetectionNum[0]; i++) {
                 float score = outputScores[0][i];
@@ -133,6 +134,11 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 
 
                 if (score >= SCORE_THRESHOLD) {
+                    if((boundingBox.right- boundingBox.left)*resultViewSize.getWidth() > maxWidth)
+                        maxWidth = (boundingBox.right- boundingBox.left)* resultViewSize.getWidth();
+                    if((boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
+                        maxHeight = (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight();
+
                     detectedObjectList.add(new DetectionObject(score, label, boundingBox));
                 } else {
                     break;
@@ -140,7 +146,7 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
             }
 
             //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
-            DetectionInfo detectionInfo = new DetectionInfo(10.5d, 10.2d, 3);
+            DetectionInfo detectionInfo = new DetectionInfo(maxWidth, maxHeight, detectedObjectList.size());
             if(count == 10) {
                 Bundle bundle = new Bundle();
                 bundle.putByteArray("msg", detectionInfo.toByteArray());
