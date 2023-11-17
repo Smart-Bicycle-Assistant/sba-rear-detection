@@ -133,13 +133,16 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
                 );
 
 
-                if (score >= SCORE_THRESHOLD) {
-                    if((boundingBox.right- boundingBox.left)*resultViewSize.getWidth() > maxWidth)
-                        maxWidth = (boundingBox.right- boundingBox.left)* resultViewSize.getWidth();
-                    if((boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
-                        maxHeight = (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight();
+                if (score >= SCORE_THRESHOLD){
+                    if(label.equals("car")||label.equals("bus")||label.equals("truck")) {
+                        if ((boundingBox.right - boundingBox.left) * resultViewSize.getWidth() > maxWidth)
+                            maxWidth = (boundingBox.right - boundingBox.left) * resultViewSize.getWidth();
+                        if ((boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
+                            maxHeight = (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight();
 
-                    detectedObjectList.add(new DetectionObject(score, label, boundingBox));
+                        detectedObjectList.add(new DetectionObject(score, label, boundingBox));
+                    }
+
                 } else {
                     break;
                 }
