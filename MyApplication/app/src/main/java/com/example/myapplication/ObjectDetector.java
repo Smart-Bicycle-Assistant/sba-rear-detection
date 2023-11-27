@@ -119,6 +119,7 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 //            }
             float maxWidth = 0;
             float maxHeight = 0;
+            Integer maxType = 0;
             for(int i = 0; i < outputScores[0].length; i++) {
 //            for (int i = 0; i < outputDetectionNum[0]; i++) {
                 float score = outputScores[0][i];
@@ -136,11 +137,17 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 
                 if (score >= SCORE_THRESHOLD){
                     if(label.equals("car")||label.equals("bus")||label.equals("truck")) {
-                        if ((boundingBox.right- boundingBox.left) < 1  &&  (boundingBox.right - boundingBox.left) * resultViewSize.getWidth() > maxWidth)
-                            maxWidth = (boundingBox.right - boundingBox.left) * resultViewSize.getWidth();
-                        if ((boundingBox.top- boundingBox.bottom) < 1  &&  (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
-                            maxHeight = (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight();
-
+                        Log.d("TAG", "detect: " + (boundingBox.right - boundingBox.left) + ", " + (boundingBox.bottom - boundingBox.top));
+                        if ((boundingBox.right - boundingBox.left) < resultViewSize.getWidth() && (boundingBox.right - boundingBox.left) > maxWidth) {
+                            maxWidth = (boundingBox.right - boundingBox.left);
+                            if(label.equals("car"))
+                                maxType = 1;
+                            else if (label.equals("bus"))
+                                maxType = 2;
+                            else
+                                maxType = 3;
+                        }
+                        Log.d("TAG", "detect: "+maxWidth+", " + maxType);
                         detectedObjectList.add(new DetectionObject(score, label, boundingBox));
                     }
 
@@ -150,17 +157,22 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
             }
 
             //todo : send maxWidth maxHeight numberOfDetectedObject to Service.
-            DetectionInfo detectionInfo = new DetectionInfo(maxWidth, maxHeight, detectedObjectList.size());
+
+            DetectionInfo detectionInfo = new DetectionInfo(maxWidth, maxType, detectedObjectList.size());
             if(count == 10) {
-                Bundle bundle = new Bundle();
-                bundle.putByteArray("msg", detectionInfo.toByteArray());
-                try{
-                    mRemoteService.sendInfo(bundle);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                count = 0;
+                if(detectedObjectList.size() > 0)
+                {
+                    Bundle bundle = new Bundle();
+                    bundle.putByteArray("msg", detectionInfo.toByteArray());
+                    try{
+                        mRemoteService.sendInfo(bundle);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    count = 0;
 //                Log.d("myapplication", "detect: ");
+                }
+
             }
             else {
                 count ++;
