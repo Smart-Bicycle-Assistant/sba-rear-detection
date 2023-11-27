@@ -117,8 +117,8 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 //            {
 //                Log.d("TAG", ""+outputLabels[0][i]);
 //            }
-            double maxWidth = 0;
-            double maxHeight = 0;
+            float maxWidth = 0;
+            float maxHeight = 0;
             for(int i = 0; i < outputScores[0].length; i++) {
 //            for (int i = 0; i < outputDetectionNum[0]; i++) {
                 float score = outputScores[0][i];
@@ -134,9 +134,9 @@ public class ObjectDetector implements ImageAnalysis.Analyzer {
 
 
                 if (score >= SCORE_THRESHOLD) {
-                    if((boundingBox.right- boundingBox.left)*resultViewSize.getWidth() > maxWidth)
+                    if((boundingBox.right- boundingBox.left) < 1  &&  (boundingBox.right- boundingBox.left)*resultViewSize.getWidth() > maxWidth)
                         maxWidth = (boundingBox.right- boundingBox.left)* resultViewSize.getWidth();
-                    if((boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
+                    if((boundingBox.top- boundingBox.bottom) < 1  &&  (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight() > maxHeight)
                         maxHeight = (boundingBox.top - boundingBox.bottom) * resultViewSize.getHeight();
 
                     detectedObjectList.add(new DetectionObject(score, label, boundingBox));

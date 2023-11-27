@@ -1,24 +1,26 @@
 package com.example.myapplication;
 
+import android.util.Log;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 
 public class DetectionInfo {
-    private Double boxMaxWidth;
-    private Double boxMaxHeight;
+    private float boxMaxWidth;
+    private float boxMaxHeight;
     private Integer boxNumber;
 
-    public DetectionInfo(Double boxMaxWidth, Double boxMaxHeight, Integer boxNumber) {
+    public DetectionInfo(float boxMaxWidth, float boxMaxHeight, Integer boxNumber) {
         this.boxMaxWidth = boxMaxWidth;
         this.boxMaxHeight = boxMaxHeight;
         this.boxNumber = boxNumber;
     }
 
-    public Double getBoxMaxWidth() {
+    public float getBoxMaxWidth() {
         return boxMaxWidth;
     }
 
-    public Double getBoxMaxHeight() {
+    public float getBoxMaxHeight() {
         return boxMaxHeight;
     }
 
@@ -26,11 +28,11 @@ public class DetectionInfo {
         return boxNumber;
     }
 
-    public void setBoxMaxWidth(Double boxMaxWidth) {
+    public void setBoxMaxWidth(float boxMaxWidth) {
         this.boxMaxWidth = boxMaxWidth;
     }
 
-    public void setBoxMaxHeight(Double boxMaxHeight) {
+    public void setBoxMaxHeight(float boxMaxHeight) {
         this.boxMaxHeight = boxMaxHeight;
     }
 
@@ -42,9 +44,11 @@ public class DetectionInfo {
         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
         DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
         try {
-
-            dataOutputStream.writeFloat(boxMaxWidth.floatValue());
-            dataOutputStream.writeFloat(boxMaxHeight.floatValue());
+            Log.d("TAG", "toByteArray: " + boxMaxWidth);
+            Log.d("TAG", "toByteArray: " + boxMaxHeight);
+            Log.d("TAG", "toByteArray: " + boxNumber);
+            dataOutputStream.writeFloat(boxMaxWidth);
+            dataOutputStream.writeFloat(boxMaxHeight);
             dataOutputStream.writeInt(boxNumber);
             dataOutputStream.flush();
         } catch (Exception e) {
