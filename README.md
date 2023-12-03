@@ -13,13 +13,17 @@
 
 ## ⚒️ 기술 스택
 <img src="https://img.shields.io/badge/tensorflow lite-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white"/>
+
  
 <br />
 
-### 모델 ssd mobilenet v1 논문 링크
+## 📄 모델 ssd mobilenet v1 논문 링크
 🔗 <a href="https://arxiv.org/abs/1704.04861">ssd_mobilenet_v1</a><br/>
 
-### ssd mobilenet v1을 사용한 이유
+
+<br/>
+
+## 🔍 ssd mobilenet v1을 사용한 이유
 ✅ 모바일 앱에서 사용되는 것을 목적으로 효율적인 모델
 <br/>
 
@@ -32,6 +36,7 @@
 ![ssd mobilnet 1](https://github.com/Smart-Bicycle-Assistant/sba-rear-detection/assets/101545983/43adbcbe-a628-4ade-9e98-c3edf707c31a)
 
 
+<br/>
 
 
 ## 📁 팀원 정보
