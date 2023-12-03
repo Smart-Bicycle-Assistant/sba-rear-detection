@@ -17,12 +17,15 @@
 <br />
 
 ### 모델 ssd mobilenet v1 논문 링크
-🔗 <a href="https://arxiv.org/abs/1704.04861">Leaflet</a><br/>
+🔗 <a href="https://arxiv.org/abs/1704.04861"></a><br/>
 
 ### ssd mobilenet v1을 사용한 이유
 ✅ 모바일 앱에서 사용되는 것을 목적으로 효율적인 모델
+<br/>
 ✅ 모델이 작아서 성능이 떨어지지만, GoogleNet, VGG16과 비교했을 때, 모델 크기 대비대 accuracy가 좋습니다.
+<br/>
 ✅ object detection 에 적용시켰을 때 faster-rcnn과 비교하면 성능이 더 좋습니다.
+<br/>
 
 
 
