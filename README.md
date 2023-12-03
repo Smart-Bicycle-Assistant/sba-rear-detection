@@ -22,6 +22,8 @@
 ### ssd mobilenet v1을 사용한 이유
 ✅ 모바일 앱에서 사용되는 것을 목적으로 효율적인 모델
 <br/>
+![ssd mobilnet 2](https://github.com/Smart-Bicycle-Assistant/sba-rear-detection/assets/101545983/2a3cfb2a-5573-4453-9914-1be48c1dcd23)
+
 ✅ 모델이 작아서 성능이 떨어지지만, GoogleNet, VGG16과 비교했을 때, 모델 크기 대비대 accuracy가 좋습니다.
 <br/>
 ✅ object detection 에 적용시켰을 때 faster-rcnn과 비교하면 성능이 더 좋습니다.
