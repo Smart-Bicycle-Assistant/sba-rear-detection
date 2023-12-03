@@ -13,6 +13,8 @@
 
 ## ⚒️ 기술 스택
 <img src="https://img.shields.io/badge/tensorflow lite-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white"/>
+<br/>
+자전거 주행 중 후방감지를 위해 object detection 모델을 사용하는 이유는 주로 차량이 도로에서 가장 큰 위험 요소이기 때문에 해당 모델을 통해 차량을 효과적으로 분류하고 대비할 수 있기 때문입니다. ssd mobilenet v1 모델을 tflite 형식으로 바꿨으며 class가 car, truck, bus이며 score threshold를 0.5로 설정하고 이를 넘을 경우, 일반 승용차, 트럭, 버스의 감지 유무를 메인 앱에 전달합니다.
 
  
 <br />
