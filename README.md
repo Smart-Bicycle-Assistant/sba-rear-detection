@@ -17,7 +17,7 @@
 <br />
 
 ### 모델 ssd mobilenet v1 논문 링크
-🔗 <a href="https://arxiv.org/abs/1704.04861"></a><br/>
+🔗 <a href="https://arxiv.org/abs/1704.04861">ssd_mobilenet_v1</a><br/>
 
 ### ssd mobilenet v1을 사용한 이유
 ✅ 모바일 앱에서 사용되는 것을 목적으로 효율적인 모델
