@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.os.Message;
 import android.os.RemoteException;
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 
@@ -102,8 +103,25 @@ public class CommunicationService extends Service {
 
 //                socket = new Socket("210.107.198.230",21234);
                 Log.d("myapplication", "run: "+socket);
+                new Handler (Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "connection with s-ba main application.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+                // 수정된 부분
+
+
             } catch (IOException e) {
+                new Handler (Looper.getMainLooper()).post(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "connection failed with s-ba main application.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
                 throw new RuntimeException(e);
+
             }
             Looper.prepare();
             socketHandler = new Handler(Looper.myLooper()) {

@@ -149,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == REQUEST_CODE_PERMISSIONS) {
             if (allPermissionsGranted()) {
                 Log.d("start","onRequestPermissions");
-//                setupCamera();
+                setupCamera();
             } else {
                 Toast.makeText(this, "사용자가 권한을 승인하지 않았습니다.", Toast.LENGTH_SHORT).show();
                 finish();
